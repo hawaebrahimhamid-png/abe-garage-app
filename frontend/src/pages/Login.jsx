@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 
 function Login() {
@@ -7,30 +7,31 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // 👉 Fake login check
-    if (email === "admin@gmail.com" && password === "1234") {
-      localStorage.setItem("isAuth", "true"); // save login state
-      navigate("/admin"); // redirect
+    const res = await fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("isAuth", "true");
+      navigate("/admin");
     } else {
       alert("Invalid credentials");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded shadow w-full max-w-md"
-      >
-        <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
-
+    <div className="flex flex-col gap-4 p-6">
+      <form onSubmit={handleLogin} className="flex flex-col gap-3">
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-3 border rounded mb-4"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -38,15 +39,20 @@ function Login() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-3 border rounded mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full bg-blue-600 text-white p-3 rounded">
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
+
+      {/* 👇 CREATE ACCOUNT BUTTON */}
+      <button
+        onClick={() => navigate("/register")}
+        className="text-blue-600 underline"
+      >
+        Create account
+      </button>
     </div>
   );
 }

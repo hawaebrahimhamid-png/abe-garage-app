@@ -19,8 +19,8 @@ function Home() {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="p-6 shadow rounded bg-white">
             <img
-              src="https://images.unsplash.com/photo-1515923162035-7a9f1d0a7a5c"
-              alt="repair"
+              src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc"
+              alt="car repair"
               className="rounded mb-4"
             />
             <h3 className="font-bold text-xl">Repair</h3>

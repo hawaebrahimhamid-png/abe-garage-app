@@ -1,12 +1,27 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 function MainLayout() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // ❌ remove login state
+    localStorage.removeItem("isAuth");
+
+    // 👉 redirect to login
+    navigate("/login");
+  };
   return (
     <div className="flex">
       {/* Sidebar */}
       <div className="w-64 h-screen bg-gray-800 text-white p-4">
         <h2 className="text-xl font-bold mb-4">Admin</h2>
-
+        {/* 🔴 Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 px-4 py-2 rounded mb-4 w-full"
+        >
+          Logout
+        </button>
         <nav className="space-y-2">
           <Link to="/admin">Dashboard</Link>
           <br />

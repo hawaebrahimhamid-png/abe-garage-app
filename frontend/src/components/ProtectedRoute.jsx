@@ -1,13 +1,14 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute() {
   const isAuth = localStorage.getItem("isAuth");
 
-  if (!isAuth) {
-    return <Navigate to="/login" />;
+  // ✅ STRICT CHECK
+  if (isAuth !== "true") {
+    return <Navigate to="/register" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
 
 export default ProtectedRoute;

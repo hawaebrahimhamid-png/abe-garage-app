@@ -1,8 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-
+import Register from "./pages/Register";
 // Layouts
 import MainLayout from "./layout/MainLayout";
 import PublicLayout from "./layout/PublicLayout";
+
+// Protected Route
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -19,23 +22,28 @@ import NotFound from "./pages/NotFound";
 function App() {
   return (
     <Routes>
-      {/* 🌐 PUBLIC */}
+      {/* 🌐 PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
       </Route>
 
-      {/* 🔐 ADMIN */}
-      <Route path="/admin" element={<MainLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="customers" element={<Customers />} />
-        <Route path="vehicles" element={<Vehicles />} />
-        <Route path="services" element={<Services />} />
+    
+
+      {/* 🔐 ADMIN (PROTECTED) */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/admin" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="vehicles" element={<Vehicles />} />
+          <Route path="services" element={<Services />} />
+        </Route>
       </Route>
 
-      {/* ❌ 404 */}
+      {/* ❌ 404 PAGE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
