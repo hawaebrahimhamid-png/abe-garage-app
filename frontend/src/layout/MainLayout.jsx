@@ -3,13 +3,13 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 function MainLayout() {
   const navigate = useNavigate();
 
+  // 👇 PUT IT HERE
   const handleLogout = () => {
-    // ❌ remove login state
+    localStorage.removeItem("token");
     localStorage.removeItem("isAuth");
-
-    // 👉 redirect to login
     navigate("/login");
   };
+
   return (
     <div className="flex">
       {/* Sidebar */}
