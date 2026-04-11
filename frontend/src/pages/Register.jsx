@@ -19,12 +19,9 @@ function Register() {
     const data = await res.json();
 
     if (data.success) {
-      // 🔥 AUTO LOGIN STEP
-      localStorage.setItem("isAuth", "true");
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // 🚀 redirect immediately to admin
-      navigate("/admin");
+      // ✅ CORRECT BEHAVIOR
+      alert("Registration successful! Please login.");
+      navigate("/login");
     } else {
       alert(data.message || "Registration failed");
     }

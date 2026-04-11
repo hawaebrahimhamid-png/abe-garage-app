@@ -1,11 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 function ProtectedRoute() {
-  const isAuth = localStorage.getItem("isAuth");
+  const token = localStorage.getItem("token");
 
-  // ✅ STRICT CHECK
-  if (isAuth !== "true") {
-    return <Navigate to="/register" replace />;
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;

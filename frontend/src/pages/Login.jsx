@@ -1,5 +1,5 @@
-import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,19 +10,26 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.success) {
-      localStorage.setItem("isAuth", "true");
-      navigate("/admin");
-    } else {
-      alert("Invalid credentials");
+      console.log("LOGIN RESPONSE:", data);
+
+      if (res.ok && data.success) {
+        localStorage.setItem("token", data.token);
+        navigate("/admin");
+      } else {
+        alert("Login failed");
+      }
+    } catch (error) {
+      console.error("FETCH ERROR:", error);
+      alert("Backend not reachable");
     }
   };
 
@@ -46,7 +53,6 @@ function Login() {
         <button type="submit">Login</button>
       </form>
 
-      {/* 👇 CREATE ACCOUNT BUTTON */}
       <button
         onClick={() => navigate("/register")}
         className="text-blue-600 underline"

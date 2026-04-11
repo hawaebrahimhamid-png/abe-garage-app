@@ -1,28 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api/api";
 
 function Customers() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  // Add customer (frontend only)
-  const handleAddCustomer = () => {
+  // ================= LOAD CUSTOMERS =================
+  useEffect(() => {
+    const loadCustomers = async () => {
+      setLoading(true);
+
+      try {
+        const res = await api.get("/customers"); // ✅ CLEAN AXIOS
+        setCustomers(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+
+      setLoading(false);
+    };
+
+    loadCustomers();
+  }, []);
+
+  // ================= ADD CUSTOMER =================
+  const addCustomer = async () => {
     if (!name || !phone) {
-      alert("Please fill all fields");
+      alert("Fill all fields");
       return;
     }
 
-    const newCustomer = {
-      id: Date.now(),
-      name,
-      phone,
-    };
+    setSaving(true);
 
-    setCustomers([...customers, newCustomer]);
+    try {
+      const res = await api.post("/customers", {
+        name,
+        phone,
+      });
 
-    // clear inputs
-    setName("");
-    setPhone("");
+      setCustomers((prev) => [...prev, res.data]);
+
+      setName("");
+      setPhone("");
+    } catch (err) {
+      console.log(err);
+    }
+
+    setSaving(false);
   };
 
   return (
@@ -48,42 +75,49 @@ function Customers() {
         />
 
         <button
-          onClick={handleAddCustomer}
+          onClick={addCustomer}
+          disabled={saving}
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
-          Save Customer
+          {saving ? "Saving..." : "Save Customer"}
         </button>
       </div>
 
-      {/* TABLE */}
+      {/* TABLE + SPINNER */}
       <div className="bg-white p-5 rounded shadow">
         <h2 className="font-bold mb-3">Customer List</h2>
 
-        <table className="w-full border">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Phone</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {customers.length === 0 ? (
-              <tr>
-                <td colSpan="2" className="text-center p-3 text-gray-500">
-                  No customers yet
-                </td>
+        {loading ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+          </div>
+        ) : (
+          <table className="w-full border">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Phone</th>
               </tr>
-            ) : (
-              customers.map((c) => (
-                <tr key={c.id}>
-                  <td className="p-2 border">{c.name}</td>
-                  <td className="p-2 border">{c.phone}</td>
+            </thead>
+
+            <tbody>
+              {customers.length === 0 ? (
+                <tr>
+                  <td colSpan="2" className="text-center p-3 text-gray-500">
+                    No customers yet
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                customers.map((c) => (
+                  <tr key={c.id}>
+                    <td className="p-2 border">{c.name}</td>
+                    <td className="p-2 border">{c.phone}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
