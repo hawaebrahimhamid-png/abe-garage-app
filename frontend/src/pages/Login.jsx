@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -7,31 +8,28 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+ const handleLogin = async (e) => {
+   e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+   try {
+     const res = await api.post("/login", {
+       email,
+       password,
+     });
 
-      const data = await res.json();
+     console.log("LOGIN RESPONSE:", res.data);
 
-      console.log("LOGIN RESPONSE:", data);
-
-      if (res.ok && data.success) {
-        localStorage.setItem("token", data.token);
-        navigate("/admin");
-      } else {
-        alert("Login failed");
-      }
-    } catch (error) {
-      console.error("FETCH ERROR:", error);
-      alert("Backend not reachable");
-    }
-  };
+     if (res.data.success) {
+       localStorage.setItem("token", res.data.token);
+       navigate("/admin");
+     } else {
+       alert("Login failed");
+     }
+   } catch (error) {
+     console.error(error);
+     alert("Backend not reachable");
+   }
+ };
 
   return (
     <div className="flex flex-col gap-4 p-6">

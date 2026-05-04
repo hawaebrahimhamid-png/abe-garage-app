@@ -1,10 +1,11 @@
 import { useState } from "react";
+import api from "../api/api";
 
 function Services() {
   const [vehicle, setVehicle] = useState("");
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
+
   const [services, setServices] = useState([]);
 
   // fake vehicles (later from backend)
@@ -13,28 +14,29 @@ function Services() {
     { id: 2, plate: "BB-5678" },
   ];
 
-  const handleAddService = () => {
-    if (!vehicle || !cost || !description || !status) {
-      alert("Please fill all fields");
-      return;
-    }
+ const handleAddService = async () => {
+   if (!vehicle || !cost || !description) {
+     alert("Please fill all fields");
+     return;
+   }
 
-    const newService = {
-      id: Date.now(),
-      vehicle,
-      cost,
-      description,
-      status,
-    };
+   try {
+     const res = await api.post("/services", {
+       vehicle_id: vehicle,
+       description,
+       cost,
+     });
 
-    setServices([...services, newService]);
+     setServices([...services, res.data]);
 
-    setVehicle("");
-    setCost("");
-    setDescription("");
-    setStatus("");
-  };
-
+     setVehicle("");
+     setCost("");
+     setDescription("");
+   } catch (error) {
+     console.error(error);
+     alert("Failed to add service");
+   }
+ };
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Services 🔧</h1>
@@ -51,7 +53,7 @@ function Services() {
         >
           <option value="">Select Vehicle</option>
           {vehicleList.map((v) => (
-            <option key={v.id} value={v.plate}>
+            <option key={v.id} value={v.id}>
               {v.plate}
             </option>
           ))}
@@ -71,17 +73,6 @@ function Services() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-
-        <select
-          className="border p-2 w-full mb-3"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="">Select Status</option>
-          <option value="pending">Pending</option>
-          <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
 
         <button
           onClick={handleAddService}
@@ -115,10 +106,12 @@ function Services() {
             ) : (
               services.map((s) => (
                 <tr key={s.id}>
-                  <td className="p-2 border">{s.vehicle}</td>
+                  <td className="p-2 border">
+                    {vehicleList.find((v) => v.id == s.vehicle_id)?.plate}
+                  </td>
                   <td className="p-2 border">{s.cost}</td>
                   <td className="p-2 border">{s.description}</td>
-                  <td className="p-2 border">{s.status}</td>
+                  <td className="p-2 border">-</td>
                 </tr>
               ))
             )}

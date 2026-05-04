@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api/api";
 
 function Vehicles() {
   const [plate, setPlate] = useState("");
@@ -12,26 +13,29 @@ function Vehicles() {
     { id: 2, name: "Sara Ali" },
   ];
 
-  const handleAddVehicle = () => {
-    if (!plate || !model || !customer) {
-      alert("Please fill all fields");
-      return;
-    }
+ const handleAddVehicle = async () => {
+   if (!plate || !model || !customer) {
+     alert("Please fill all fields");
+     return;
+   }
 
-    const newVehicle = {
-      id: Date.now(),
-      plate,
-      model,
-      customer,
-    };
+   try {
+     const res = await api.post("/vehicles", {
+       customer_id: customer,
+       plate_number: plate,
+       model,
+     });
 
-    setVehicles([...vehicles, newVehicle]);
+     setVehicles((prev) => [...prev, res.data]);
 
-    setPlate("");
-    setModel("");
-    setCustomer("");
-  };
-
+     setPlate("");
+     setModel("");
+     setCustomer("");
+   } catch (error) {
+     console.error(error);
+     alert("Failed to add vehicle");
+   }
+ };
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Vehicles 🚗</h1>
@@ -62,7 +66,7 @@ function Vehicles() {
         >
           <option value="">Select Customer</option>
           {customersList.map((c) => (
-            <option key={c.id} value={c.name}>
+            <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
@@ -99,9 +103,11 @@ function Vehicles() {
             ) : (
               vehicles.map((v) => (
                 <tr key={v.id}>
-                  <td className="p-2 border">{v.plate}</td>
+                  <td className="p-2 border">{v.plate_number}</td>
                   <td className="p-2 border">{v.model}</td>
-                  <td className="p-2 border">{v.customer}</td>
+                  <td className="p-2 border">
+                    {customersList.find((c) => c.id == v.customer_id)?.name}
+                  </td>
                 </tr>
               ))
             )}
