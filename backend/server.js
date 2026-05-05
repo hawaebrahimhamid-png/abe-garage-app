@@ -11,7 +11,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://abe-garage-app-omega.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // ================= TEST =================
